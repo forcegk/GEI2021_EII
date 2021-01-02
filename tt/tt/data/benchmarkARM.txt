@@ -1,0 +1,117 @@
+t4g.micro
+
+
+=============================================================================================================================
+
+[ec2-user@ip-172-31-64-28 ~]$ lscpu
+Architecture:        aarch64
+Byte Order:          Little Endian
+CPU(s):              2
+On-line CPU(s) list: 0,1
+Thread(s) per core:  1
+Core(s) per socket:  2
+Socket(s):           1
+NUMA node(s):        1
+Model:               1
+BogoMIPS:            243.75
+L1d cache:           64K
+L1i cache:           64K
+L2 cache:            1024K
+L3 cache:            32768K
+NUMA node0 CPU(s):   0,1
+Flags:               fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp ssbs
+
+=============================================================================================================================
+
+[ec2-user@ip-172-31-64-28 ~]$ cat /proc/cpuinfo | grep processor
+processor       : 0
+processor       : 1
+
+=============================================================================================================================
+
+Instalamos sysbench: [https://zenliu.medium.com/sysbench-1-1-installation-for-aws-ec2-instance-running-amazon-linux-a330b1cce7a7]
+
+timeamos:
+sudo yum -y install git gcc make automake libtool openssl-devel ncurses-compat-libs mysql-devel
+git clone https://github.com/akopytov/sysbench
+cd sysbench
+./autogen.sh
+./configure
+make
+sudo make install
+
+RESULTADO:
+real    0m55.155s
+user    0m49.225s
+sys     0m3.279s
+
+
+[ec2-user@ip-172-31-64-28 sysbench]$ sysbench cpu --threads=1 run
+sysbench 1.1.0-bbee5d5 (using bundled LuaJIT 2.1.0-beta3)
+
+Running the test with following options:
+Number of threads: 1
+Initializing random number generator from current time
+
+
+Prime numbers limit: 10000
+
+Initializing worker threads...
+
+Threads started!
+
+CPU speed:
+    events per second:  2960.71
+
+Throughput:
+    events/s (eps):                      2960.7109
+    time elapsed:                        10.0003s
+    total number of events:              29608
+
+Latency (ms):
+         min:                                    0.34
+         avg:                                    0.34
+         max:                                    0.39
+         95th percentile:                        0.34
+         sum:                                 9995.37
+
+Threads fairness:
+    events (avg/stddev):           29608.0000/0.00
+    execution time (avg/stddev):   9.9954/0.00
+
+
+=============================================================================================================================
+
+7zip
+
+Instalar:
+sudo amazon-linux-extras install epel
+sudo yum install -y p7zip p7zip-plugins
+
+Benchmark:
+7z b -mmt1
+
+
+
+[ec2-user@ip-172-31-73-177 ~]$ 7z b -mmt1
+
+7-Zip [64] 16.02 : Copyright (c) 1999-2016 Igor Pavlov : 2016-05-21
+p7zip Version 16.02 (locale=en_US.UTF-8,Utf16=on,HugeFiles=on,64 bits,2 CPUs LE)
+
+LE
+CPU Freq:  2498  2497  2498  2499  2497  2497  2498  2498  2498
+
+RAM size:     955 MB,  # CPU hardware threads:   2
+RAM usage:    435 MB,  # Benchmark threads:      1
+
+                       Compressing  |                  Decompressing
+Dict     Speed Usage    R/U Rating  |      Speed Usage    R/U Rating
+         KiB/s     %   MIPS   MIPS  |      KiB/s     %   MIPS   MIPS
+
+22:       4213   100   4099   4099  |      41253   100   3522   3522
+23:       3808   100   3881   3881  |      40854   100   3536   3536
+24:       3567   100   3836   3836  |      40262   100   3535   3535
+25:       3393   100   3874   3874  |      40027   100   3563   3563
+----------------------------------  | ------------------------------
+Avr:             100   3923   3922  |              100   3539   3539
+Tot:             100   3731   3731
