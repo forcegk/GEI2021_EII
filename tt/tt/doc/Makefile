@@ -25,4 +25,5 @@ c: clean
 clean:
 	rm -f *.aux *.bbl *.bcf *.blg *.log *.pdf *.xml *.toc *.pyg *.out
 	rm -f preamble/*.aux
+	rm -f img/*.pdf
 	rm -rf ./_minted-main

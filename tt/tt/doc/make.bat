@@ -42,6 +42,7 @@ for %%a in ("*.toc") do del "%%a"
 for %%a in ("*.pyg") do del "%%a"
 for %%a in ("*.out") do del "%%a"
 for %%a in ("preamble\*.aux") do del "%%a"
+for %%a in ("img\*.pdf") do del "%%a"
 for %%a in ("_minted-main\*") do del "%%a"
 rmdir _minted-main
 goto :EOF
