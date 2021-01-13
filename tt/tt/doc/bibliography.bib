@@ -1,30 +1,56 @@
-@book{zhu2018embedded,
-  title={Embedded Systems with ARM Cortex-M Microcontrollers in Assembly Language and C},
-  author={Zhu, Yifeng},
-  year={2018},
-  publisher={E-Man Press Llc}
-}
-
-@electronic{KL46manual,
-  title = {KL46 Sub-Family Reference Manual},
-  publisher = {MultiMedia LLC},
-  year = 2013,
-  url = {http://eewiki.net/download/attachments/35193138/KL46P121M48SF4RM.pdf?version=1&modificationDate=1405104254950&api=v2},
-  urldate = {2020-12-15}
-}
-
-@electronic{keil_function_reference,
-  title = {KL46 Sub-Family Reference Manual},
+@electronic{arm_aws_graviton_overview,
+  title = {AWS Graviton overview by ARM},
   publisher = {Arm Ltd [GB]},
-  url = {https://www.keil.com/support/man/docs/rlarm/rlarm_ar_func_ref.htm},
-  urldate = {2020-12-16}
+  url = {https://www.arm.com/why-arm/partner-ecosystem/aws},
+  urldate = {2020-12-27}
 }
 
-@electronic{wifi_design_concepts_conoference,
-  title = {Wi-Fi Design Concepts},
-  author = {David Coleman},
-  publisher = {Extreme Networks},
-  url = {https://www.youtube.com/watch?v=BoUlr6_8_oM},
-  urldate = {2020-12-28}
+@electronic{apple_m1_overview,
+  title = {Apple M1 Chip Overview},
+  publisher = {Apple Inc. [US]},
+  year = {2020},
+  url = {https://www.apple.com/mac/m1/},
+  urldate = {2020-12-27}
 }
 
+@INPROCEEDINGS{risc_vs_cisc_6522302,
+  author={E. {Blem} and J. {Menon} and K. {Sankaralingam}},
+  booktitle={2013 IEEE 19th International Symposium on High Performance Computer Architecture (HPCA)}, 
+  title={Power struggles: Revisiting the RISC vs. CISC debate on contemporary ARM and x86 architectures}, 
+  year={2013},
+  volume={},
+  number={},
+  pages={1-12},
+  abstract={RISC vs. CISC wars raged in the 1980s when chip area and processor design complexity were the primary constraints and desktops and servers exclusively dominated the computing landscape. Today, energy and power are the primary design constraints and the computing landscape is significantly different: growth in tablets and smartphones running ARM (a RISC ISA) is surpassing that of desktops and laptops running x86 (a CISC ISA). Further, the traditionally low-power ARM ISA is entering the high-performance server market, while the traditionally high-performance x86 ISA is entering the mobile low-power device market. Thus, the question of whether ISA plays an intrinsic role in performance or energy efficiency is becoming important, and we seek to answer this question through a detailed measurement based study on real hardware running real applications. We analyze measurements on the ARM Cortex-A8 and Cortex-A9 and Intel Atom and Sandybridge i7 microprocessors over workloads spanning mobile, desktop, and server computing. Our methodical investigation demonstrates the role of ISA in modern microprocessors' performance and energy efficiency. We find that ARM and x86 processors are simply engineering design points optimized for different levels of performance, and there is nothing fundamentally more energy efficient in one ISA class or the other. The ISA being RISC or CISC seems irrelevant.},
+  keywords={computational complexity;integrated circuit design;microprocessor chips;parallel architectures;reduced instruction set computing;RISC;CISC;ARM architectures;x86 architectures;chip area;processor design complexity;desktops;servers;design constraints;computing landscape;low-power ARM ISA;x86 ISA;ARM Cortex-A8;ARM Cortex-A9;Intel Atom microprocessors;Sandybridge i7 microprocessors;Abstracts;Reduced instruction set computing;Mobile communication;Servers},
+  doi={10.1109/HPCA.2013.6522302},
+  ISSN={1530-0897},
+  month={Feb}
+}
+
+@inbook{measuring_moores_law_NBERc13897,
+ Crossref = "NBERcorr-2",
+ title = "Measuring Moore’s Law: Evidence from Price, Cost, and Quality Indexes",
+ author = "Kenneth Flamm",
+ BookTitle = "Measuring and Accounting for Innovation in the Twenty-First Century",
+ Publisher = "University of Chicago Press",
+ year = "2019",
+ month = "May",
+ URL = "http://www.nber.org/chapters/c13897",
+}
+
+@inproceedings{inside_netburst_architecture_carmean2000inside,
+  title={Inside the pentium 4 processor microarchitecture},
+  author={Carmean, Doug},
+  booktitle={Intel Developer Forum},
+  year={2000},
+  URL = "https://courses.cs.washington.edu/courses/cse548/05wi/files/Pentium4-Microarchitecture-Slides.pdf"
+}
+
+@electronic{ampere_announces_128_core_arm_server_cpu,
+  title = {Ampere announces 128-core Arm server processor},
+  publisher = {networkworld.com},
+  date = {29-06-2020},
+  url = {https://www.networkworld.com/article/3564514/ampere-announces-128-core-arm-server-processor.html},
+  urldate = {2021-01-12}
+}

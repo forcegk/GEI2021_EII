@@ -2,6 +2,7 @@
 
 \include{preamble/packages}
 \include{preamble/bibliography}
+\addbibresource{bibliography.bib}
 
 \setpapersize{A4}       %  DIN A4
 \setmargins{3cm}        % margen izquierdo
@@ -13,18 +14,125 @@
 {0pt}                   % altura del pie de página
 {2cm}                   % espacio entre el texto y el pie de página
 
+\renewcommand{\labelenumii}{\theenumii}
+\renewcommand{\theenumii}{\theenumi.\arabic{enumii}.}
 \begin{document}
+\pagenumbering{gobble}% Remove page numbers (and reset to 1)
+\clearpage
 
-\author {Alonso Rodríguez}
-\title {TT: Uso de ARM en el Datacenter}
+\begin{titlepage}
 
-% Título
-\maketitle
+\begin{center}
+\vspace*{-1in}
+\vspace{3.5cm}
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=8cm]{img/udc.eps}
+\end{center}
+\end{figure}
+
+\vspace*{1in}
+\title {}
+ENXEÑARÍA DE INFRAESTRUTURAS INFORMÁTICAS 20/21 Q1\\
+%\vspace{3cm}
+\vspace*{0.5in}
+\begin{Large}
+\textbf{TT: Uso de ARM en el Datacenter}\\
+\end{Large}
+
+\vspace*{10cm}
+
+\begin{large}
+\raggedleft{}
+Alonso Rodríguez Iglesias\\
+
+\textbf{\\Fecha:}\emph{ A Coruña, \today}\\
+\end{large}
+
+\end{center}
+\end{titlepage} 
+
+\newpage
+
+\addtocontents{toc}{\hspace{-0.5mm} \textbf{Capítulos}}
+\addtocontents{toc}{\hfill{} \textbf{Página} \par}
+\addtocontents{toc}{\vspace{-2mm} \hspace{-7.5mm} \hrule \par}
+
+%
+
+\tableofcontents
+\newpage
 
 % Justificamos el texto
+\pagenumbering{arabic}
 \justifying{}
 
-\section{Introducción}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                     INTRODUCCIÓN                                                      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introducción}\label{section:introduccion}
+\subsection{Contexto Histórico}
+Con el creciente interés en las arquitecturas RISC debido a su bajo consumo, y de ARM en particular, provocado por el auge de los dispositivos móviles,
+los Datacenter, que por su lado han ganado fuerza debido al también creciente interés en los servicios cloud, buscan una muy alta eficiencia
+energética.
+
+Esto ha llevado a que ARM, uno de los principales desarrolladores de CPUs RISC del mundo, cuyo modelo de negocio se basa en el licenciamiento de su propiedad intelectual,
+haya experimentado un crecimiento sin igual, y que no solo el mundo de los servidores, sino también en el mercado de consumo, en el que algunas compañías están ya transicionando
+hacia esta plataforma. \parencite{apple_m1_overview}
+
+\subsection{Motivación}\label{subsection:motivacion}
+No nos vamos a engañar, a mí personalmente lo que más me atrae de la informática es la arquitectura, así que no es sorpresa que haya terminado eligiendo este tema, del que durante muchos
+años tanto se ha discutido. \parencite{risc_vs_cisc_6522302}
+
+\subsection{Objetivos}\label{subsection:objetivos}
+En este trabajo tutelado se tratará brevemente el contexto histórico de las arquitecturas que se vienen usando en los CPD's, el por qué de la entrada con fuerza de ARM en el
+mismo ámbito, por razones de consumo/eficiencia (como por ejemplo coste de enfriamiento, etc), y se realizarán pruebas sintéticas sobre instancias ARM Graviton de AWS.\parencite{arm_aws_graviton_overview}
+
+Finalmente se reflexionará (brevemente) acerca de la posible evolución del mundo de los CPD, cloud, streaming, etc.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                 USO DE ARM EN EL CPD                                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Uso de ARM en el CPD}\label{section:uso_arm_cpd}
+\subsection{Breve introducción a RISC vs CISC}\label{subsection:introduccion_risc_cisc}
+La principal diferencia entre RISC y CISC es la complejidad del repertorio de instrucciones:
+\begin{itemize}
+    \item RISC, o Reduced Intruction Set Computer, es una aproximación más sencilla al diseño de los repertorios de instrucciones, especificando un conjunto de instrucciones reducido con el que
+    realizar los cálculos. Por esta razón los programas para CPU RISC ocupan más tamaño que sus contrapartes para CISC. Sin embargo, dicha simplicidad se traduce en una menor cantidad de
+    transistores, lo que a su vez se traduce en circuitos más pequeños, y por tanto más eficientes y baratos. \autocite[5]{measuring_moores_law_NBERc13897}
+    \item CISC, o Complex Instruction Set Computer, es una aproximación más directa al diseño de los repertorios de instrucciones, en los que se implementan en hardware instrucciones
+    completas para lograr una programación en ensamblador más sencilla, programas más pequeños, así como habitualmente permitiendo operaciones directamente sobre la memoria principal, a 
+    diferencia de los anteriores. Se pensaba que CISC dominaría siempre el mercado de computadores basándose en la premisa de que el cauce se podría segmentar \emph{ad-infinitum}, pero el 
+    pipeline en 20 etapas de la arquitectura Netburst de Intel probó esta premisa errónea, siendo este el último procesador internamente CISC. \autocite[10]{inside_netburst_architecture_carmean2000inside}
+\end{itemize}
+
+\subsection{\emph{Workloads} de Servidor}\label{subsection:workloads_servidor}
+El \emph{Workload} o carga de trabajo de un servidor es muy diferente al de un ordenador de sobremesa, que a su vez es muy diferente al de un dispositivo móvil. Sin embargo el del servidor
+es el único caso en particular en el que no realizamos un trabajo para nosotros mismos, una relación 1:1 de dispositivo por usuario, si no que con un solo servidor, solemos tener que atender
+a miles o millones de peticiones (dependiendo del carácter del servicio) de diferentes usuarios, dando una relación de 1000:1.
+
+Esta principal diferencia en \emph{workloads} hace que los servidores tengan una carga mucho más sencillamente paralelizable que por ejemplo un ordenador de sobremesa en el que por ejemplo,
+se juega a videojuegos y realizan tareas de oficina básicas.
+
+Pensemos en el caso de un servidor web: Responder una petición web no es una carga de trabajo excesivamente pesada, sin embargo conforme vamos aumentando el número de peticiones simultáneas,
+la carga continúa volviendose cada vez mayor.
+
+Volviendo a lo que comentábamos en \ref{subsection:introduccion_risc_cisc}, si tenemos un procesador que consume menos y se calienta menos por el mismo trabajo, y que ocupa menos área, nadie
+nos prohíbe poner un número ridículo de núcleos juntos. Y eso es lo que se está haciendo. En smartphones hubo CPUs de 8 núcleos al público general mucho antes de lo que los hubo en PCs de
+sobremesa, y en servidores está habiendo una tendencia similar: Procesadores que tengan una capacidad de cómputo paralelo inmensa. \parencite{ampere_announces_128_core_arm_server_cpu}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                     AWS GRAVITON                                                      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{AWS Graviton}
+gravitación
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                     CONCLUSIONES                                                      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusiones}
+gravitación
 
 
 \clearpage
