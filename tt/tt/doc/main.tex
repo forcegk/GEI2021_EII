@@ -199,63 +199,13 @@ A día 13 de Enero del 2021, los precios para las instancias de baja potencia so
 \end{center}
 
 \subsection{Instancias en AWS}\label{subsection:instancias_aws}
-La información de las CPUs y los siguientes benchmarks en \ref{subsection:benchmarks_aws} corresponden a instancias \texttt{t4g.micro} y \texttt{t2.micro} para ARM e Intel respectivamente.
-\subsubsection{t4g.micro}
-\begin{minted}[breaklines,fontsize=\small]{text}
-[ec2-user@ip-172-31-64-28 ~]$ lscpu
-Architecture:        aarch64
-Byte Order:          Little Endian
-CPU(s):              2
-On-line CPU(s) list: 0,1
-Thread(s) per core:  1
-Core(s) per socket:  2
-Socket(s):           1
-NUMA node(s):        1
-Model:               1
-BogoMIPS:            243.75
-L1d cache:           64K
-L1i cache:           64K
-L2 cache:            1024K
-L3 cache:            32768K
-NUMA node0 CPU(s):   0,1
-Flags:               fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp ssbs  
+La información de las CPUs que se puede encontrar en el Anexo \ref{anexo:info_cpu_aws} y los benchmarks en \ref{subsection:benchmarks_aws} corresponden a
+instancias \texttt{t4g.micro} y \texttt{t2.micro} para ARM e Intel respectivamente.
 
-[ec2-user@ip-172-31-64-28 ~]$ cat /proc/cpuinfo | grep processor
-processor       : 0
-processor       : 1
-\end{minted}
+La instancia \texttt{t4g.micro} se ha elegido porque hasta el día 31 de Diciembre del 2020, tenía activa una promoción de prueba gratuita, por lo que si bien no estamos comparando a igualdad
+de núcleos físicos, compensaremos esta disparidad en los benchmarks ejecutándolos en modo mononúcleo.
 
-\subsubsection{t2.micro}
-\begin{minted}[breaklines,fontsize=\small]{text}
-[ec2-user@ip-172-31-60-52 ~]$ lscpu
-Architecture:        x86_64
-CPU op-mode(s):      32-bit, 64-bit
-Byte Order:          Little Endian
-CPU(s):              1
-On-line CPU(s) list: 0
-Thread(s) per core:  1
-Core(s) per socket:  1
-Socket(s):           1
-NUMA node(s):        1
-Vendor ID:           GenuineIntel
-CPU family:          6
-Model:               63
-Model name:          Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz
-Stepping:            2
-CPU MHz:             2400.104
-BogoMIPS:            4800.19
-Hypervisor vendor:   Xen
-Virtualization type: full
-L1d cache:           32K
-L1i cache:           32K
-L2 cache:            256K
-L3 cache:            30720K
-NUMA node0 CPU(s):   0
-Flags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp lm constant_tsc rep_good nopl xtopology cpuid pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm cpuid_fault invpcid_single pti fsgsbase bmi1 avx2 smep bmi2 erms invpcid xsaveopt
-
-[ec2-user@ip-172-31-60-52 ~]$ cat /proc/cpuinfo | grep processor
-processor       : 0
-\end{minted}
+Me parece importante recalcar tambien que aún con el doble de núcleos, la instancia ARM cuesta 0.0084 USD/h, mientras que la instancia x86 son 0.0116 USD/h.
 
 \subsubsection{Diferencias}
 Como se puede apreciar, t4g.micro, con menor precio, tiene exactamente las mismas prestaciones que t2.micro, pero dos CPUs, a diferencia de la instancia x86, que solamente tiene uno.
@@ -381,7 +331,7 @@ La conclusión que yo saco es clara: AWS sobre ARM es más barato que sobre x86,
 verificación y seguridad, precisamente por el problema que comentamos de programar en una arquitectura diferente, tambien me siento capaz de afirmar que x86 no va a desaparecer, ni mucho
 menos, al menos en el futuro próximo.
 
-\section{Mención Especial: RISC-V}
+\subsection{Mención Especial: RISC-V}
 Con esta parece que inminente transición a paradigmas más basados en RISC, cada vez hay más compañías interesadas en diseñar sus SoCs ``en casa'', y un proyecto que comenzó como universitario
 llamado RISC-V está atrayendo bastante atención, sobre todo de las marcas que han de diseñar sus propios chips muy específicos como Western-Digital, Seagate, etc.
 
@@ -407,6 +357,68 @@ años de mucho más de lo que hablar que hoy en día.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                        ANEXO 1                                                        %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Información de CPU en AWS}\label{anexo:info_cpu_aws}
+\subsection{t4g.micro}
+\begin{minted}[breaklines]{text}
+[ec2-user@ip-172-31-64-28 ~]$ lscpu
+Architecture:        aarch64
+Byte Order:          Little Endian
+CPU(s):              2
+On-line CPU(s) list: 0,1
+Thread(s) per core:  1
+Core(s) per socket:  2
+Socket(s):           1
+NUMA node(s):        1
+Model:               1
+BogoMIPS:            243.75
+L1d cache:           64K
+L1i cache:           64K
+L2 cache:            1024K
+L3 cache:            32768K
+NUMA node0 CPU(s):   0,1
+Flags:               fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp ssbs  
+
+[ec2-user@ip-172-31-64-28 ~]$ cat /proc/cpuinfo | grep processor
+processor       : 0
+processor       : 1
+\end{minted}
+
+\subsection{t2.micro}
+\begin{minted}[breaklines]{text}
+[ec2-user@ip-172-31-60-52 ~]$ lscpu
+Architecture:        x86_64
+CPU op-mode(s):      32-bit, 64-bit
+Byte Order:          Little Endian
+CPU(s):              1
+On-line CPU(s) list: 0
+Thread(s) per core:  1
+Core(s) per socket:  1
+Socket(s):           1
+NUMA node(s):        1
+Vendor ID:           GenuineIntel
+CPU family:          6
+Model:               63
+Model name:          Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz
+Stepping:            2
+CPU MHz:             2400.104
+BogoMIPS:            4800.19
+Hypervisor vendor:   Xen
+Virtualization type: full
+L1d cache:           32K
+L1i cache:           32K
+L2 cache:            256K
+L3 cache:            30720K
+NUMA node0 CPU(s):   0
+Flags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp lm constant_tsc rep_good nopl xtopology cpuid pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm cpuid_fault invpcid_single pti fsgsbase bmi1 avx2 smep bmi2 erms invpcid xsaveopt
+
+[ec2-user@ip-172-31-60-52 ~]$ cat /proc/cpuinfo | grep processor
+processor       : 0
+\end{minted}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                        ANEXO 2                                                        %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Sysbench Output}\label{anexo:sysbench_output}
 \subsection{Resultados para ARM}
@@ -483,7 +495,7 @@ Threads fairness:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                                                        ANEXO 2                                                        %
+%                                                        ANEXO 3                                                        %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \section{7zip Output}\label{anexo:7zip_output}
