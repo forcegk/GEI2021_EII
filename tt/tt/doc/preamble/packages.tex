@@ -38,6 +38,8 @@
 \usepackage{array}
 \usepackage{datetime}
 \usepackage{mfirstuc}
+\usepackage{multicol}
+\usepackage{appendix}
 
 % Special
 \usepackage{minted} % Minted needs python installed, and pygments on path [https://pypi.org/project/Pygments/]
@@ -46,6 +48,15 @@
 \setcounter{secnumdepth}{4}
 \setlist[enumerate]{itemsep=0mm}
 \setlist[itemize]{itemsep=0mm}
+\captionsetup{justification=centering,margin=2cm}
+\setlength{\columnsep}{0.5cm}
+
+% Anexos en español
+\addto\captionsspanish{
+  \renewcommand\appendixname{Anexo}
+  \renewcommand\appendixpagename{Anexos}
+  \renewcommand{\appendixtocname}{Anexos}
+}
 
 % No hyphenate
 \usepackage[none]{hyphenat}

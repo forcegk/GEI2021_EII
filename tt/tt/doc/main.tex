@@ -119,24 +119,426 @@ Pensemos en el caso de un servidor web: Responder una petición web no es una ca
 la carga continúa volviendose cada vez mayor.
 
 Volviendo a lo que comentábamos en \ref{subsection:introduccion_risc_cisc}, si tenemos un procesador que consume menos y se calienta menos por el mismo trabajo, y que ocupa menos área, nadie
-nos prohíbe poner un número ridículo de núcleos juntos. Y eso es lo que se está haciendo. En smartphones hubo CPUs de 8 núcleos al público general mucho antes de lo que los hubo en PCs de
-sobremesa, y en servidores está habiendo una tendencia similar: Procesadores que tengan una capacidad de cómputo paralelo inmensa. \parencite{ampere_announces_128_core_arm_server_cpu}
+nos prohíbe poner un número ridículo de núcleos juntos; y eso es lo que se está haciendo.
+
+En smartphones hubo CPUs de 8 núcleos al público general mucho antes de lo que los hubo en PCs de sobremesa, y en servidores está habiendo una tendencia similar: Procesadores que tengan
+una capacidad de cómputo paralelo inmensa. \parencite{ampere_announces_128_core_arm_server_cpu}
+
+\subsection{Costes de un Datacenter}
+Uno de los mayores costes energéticos de un Datacenter es el enfriamiento y la entrega de potencia a los servidores, que agregados, pueden constituir entre el 60 y 80\% de la energía según
+la fuente. (Figura \ref{fig:datacenter_energy_cost})
+
+\begin{figure}[h]
+\includegraphics[width=\textwidth]{img/data_center_power_consumption.png}
+\caption{Desglose básico de costes en un Datacenter\\\parencite{datacenter_energy_cost_SONG20151255}}
+\label{fig:datacenter_energy_cost}
+\end{figure}
+
+Esto es una suma monetaria para nada desdeñable, siendo el consumo total de los Datacenter estadounidenses en 2014 de 70TWh (70 mil millones de KWh o \emph{70 billion kWh} en inglés americano),
+constituyendo alrededor del 1,8\% del total de consumo de potencia de todos los Estados Unidos en ese mismo año. \autocite[7]{usa_datacenter_energy_usage_report_61109}
+
+Imaginemos por un momento que existe un fabricante que vende modelos más baratos de procesadores, que consumen y disipan menos potencia, y eso se traduce en una bajada de un 10\% en el consumo.
+Este pequeño incremento en eficiencia energética se traduce en 7TWh de ahorro energético, por el que muchos datacenters están dispuesto a pagar.
+
+\subsection{Propuesta de valor de ARM}
+ARM ofrece un ahorro energético similar al comentado en la sección anterior, pero además también ofrece la posibilidad de licenciar la arquitectura, permitiendo así a grandes compañías
+como Amazon, Microsoft y Google crear sus propias CPUs conforme a la ISA de ARM, pudiendo cubrir más eficazmente las demandas del dominio de la empresa licenciataria, y ofreciendo aún más
+eficiencia energética.
+
+Es en este segundo caso cuando la competencia empieza a ser más evidente entre x86 y ARM (Figura \ref{fig:graviton_vs_amd_vs_intel_spec_total}), siendo la diferencia en SPECint2017 mononúcleo positiva para los Amazon Graviton 2 con respecto
+a los AMD EPYC 7571, y rozando a los Intel Xeon Platinum 8259, solo cayendo por poco en SPECfp2017, creando un escenario previsiones muy positivas para la implantación de ARM
+en servidores. \parencite{graviton2_vs_amd_vs_intel_cloud_compute}
+
+\begin{figure}[h]
+\includegraphics[width=\textwidth]{img/graviton_vs_amd_vs_intel_spec_total.png}
+\caption{SPEC2017 Rate-1 Estimated Total}
+\label{fig:graviton_vs_amd_vs_intel_spec_total}
+\end{figure}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                     AWS GRAVITON                                                      %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
 \section{AWS Graviton}
-gravitación
+\subsection{Precios}
+Recordemos que los precios de AWS fluctúan bajo demanda, pero más o menos siempre se mantienen dentro de unos márgenes.
+A día 13 de Enero del 2021, los precios para las instancias de baja potencia son los siguientes:
+\subsubsection{x86: Intel y AMD}
+\begin{center}
+\begin{tabular}{ | c | c | c | c | }
+    \hline
+    Tipo de instancia       &   \#CPU   &   RAM [GB]    &   Coste [USD/h]   \\
+    \hline
+    \texttt{t3a.nano}       &   2       &   0.5         &   0.0047          \\
+    \hline
+    \texttt{t3.nano}        &   2       &   0.5         &   0.0052          \\
+    \hline
+    \texttt{t2.nano}        &   1       &   0.5         &   0.0058          \\
+    \hline
+    \texttt{t3.micro}       &   2       &   1           &   0.0104          \\
+    \hline
+    \texttt{t2.micro}       &   1       &   1           &   0.0116          \\
+    \hline
+\end{tabular}
+\end{center}
+
+\subsubsection{ARM64: AWS Graviton}
+\begin{center}
+\begin{tabular}{ | c | c | c | c | }
+    \hline
+    Tipo de instancia       &   \#CPU   &   RAM [GB]    &   Coste [USD/h]   \\
+    \hline
+    \texttt{t4g.nano}       &   2       &   0.5         &   0.0042          \\
+    \hline
+    \texttt{t4g.micro}      &   2       &   1           &   0.0084          \\
+    \hline
+    \texttt{t4g.small}      &   2       &   2           &   0.0168          \\
+    \hline
+\end{tabular}
+\end{center}
+
+\subsection{Instancias en AWS}\label{subsection:instancias_aws}
+La información de las CPUs y los siguientes benchmarks en \ref{subsection:benchmarks_aws} corresponden a instancias \texttt{t4g.micro} y \texttt{t2.micro} para ARM e Intel respectivamente.
+\subsubsection{t4g.micro}
+\begin{minted}[breaklines,fontsize=\small]{text}
+[ec2-user@ip-172-31-64-28 ~]$ lscpu
+Architecture:        aarch64
+Byte Order:          Little Endian
+CPU(s):              2
+On-line CPU(s) list: 0,1
+Thread(s) per core:  1
+Core(s) per socket:  2
+Socket(s):           1
+NUMA node(s):        1
+Model:               1
+BogoMIPS:            243.75
+L1d cache:           64K
+L1i cache:           64K
+L2 cache:            1024K
+L3 cache:            32768K
+NUMA node0 CPU(s):   0,1
+Flags:               fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp ssbs  
+
+[ec2-user@ip-172-31-64-28 ~]$ cat /proc/cpuinfo | grep processor
+processor       : 0
+processor       : 1
+\end{minted}
+
+\subsubsection{t2.micro}
+\begin{minted}[breaklines,fontsize=\small]{text}
+[ec2-user@ip-172-31-60-52 ~]$ lscpu
+Architecture:        x86_64
+CPU op-mode(s):      32-bit, 64-bit
+Byte Order:          Little Endian
+CPU(s):              1
+On-line CPU(s) list: 0
+Thread(s) per core:  1
+Core(s) per socket:  1
+Socket(s):           1
+NUMA node(s):        1
+Vendor ID:           GenuineIntel
+CPU family:          6
+Model:               63
+Model name:          Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz
+Stepping:            2
+CPU MHz:             2400.104
+BogoMIPS:            4800.19
+Hypervisor vendor:   Xen
+Virtualization type: full
+L1d cache:           32K
+L1i cache:           32K
+L2 cache:            256K
+L3 cache:            30720K
+NUMA node0 CPU(s):   0
+Flags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp lm constant_tsc rep_good nopl xtopology cpuid pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm cpuid_fault invpcid_single pti fsgsbase bmi1 avx2 smep bmi2 erms invpcid xsaveopt
+
+[ec2-user@ip-172-31-60-52 ~]$ cat /proc/cpuinfo | grep processor
+processor       : 0
+\end{minted}
+
+\subsubsection{Diferencias}
+Como se puede apreciar, t4g.micro, con menor precio, tiene exactamente las mismas prestaciones que t2.micro, pero dos CPUs, a diferencia de la instancia x86, que solamente tiene uno.
+A parte de esto, la información del sistema no tiene por qué decirnos mucho más. No todos los GHz son iguales en la misma familia de procesadores (Por ejemplo un Pentium 4 a 3GHz no rinde
+ni de cerca igual que un Ryzen 7 5800X a 3GHz también), y menos entre diferentes familias. Para esto se han ejecutado unos benchmarks muy simples en ambas instancias y medido las diferencias
+a continuación.
+
+\subsection{Benchmarks en AWS}\label{subsection:benchmarks_aws}
+\subsubsection{Sysbench: Compilación}
+Como este programa no se encuentra en los repositorios oficiales, hemos de descargar las dependencias y compilarlo, lo cual nos sirve también como benchmark.
+
+Para esto he creado este pequeño script que realiza todo el trabajo:
+\begin{minted}[breaklines]{bash}
+    sudo yum -y install git gcc make automake libtool openssl-devel ncurses-compat-libs mysql-devel
+    git clone https://github.com/akopytov/sysbench
+    cd sysbench
+    ./autogen.sh
+    ./configure
+    make
+    sudo make install
+\end{minted}
+
+Y los resultados de ejecutar \texttt{time ./script.sh} son los siguientes:
+\begin{center}
+\begin{tabular}{ | c | c | c | c | }
+    \hline
+    Arquitectura           &   user        &   sys         &   real        \\
+    \hline
+    2x ARM64               &   0m49.225s   &   0m3.279s    &   0m55.155s   \\
+    \hline
+    1x x86                 &   0m57.475s   &   0m4.894s    &   1m10.371s   \\
+    \hline
+    \hline
+    ARM vs x86             &   -16.75\%    &   -49.25\%    &   -27.58\%    \\
+    \hline
+\end{tabular}
+\end{center}
+
+Los cuales dejan en muy buen lugar a ARM, a mi personalente me sorprendió bastante, ya que compilar ARM siempre ha sido notoriamente más lento que x86, pero también partimos con ventaja
+de que la instancia ARM tiene dos núcleos vs uno de la x86.
+
+\subsubsection{Sysbench}
+El benchmark ha sido realizado en modo mononúcleo, con el siguiente comando:
+\begin{minted}{bash}
+    sysbench cpu --threads=1 run
+\end{minted}
+
+Para no dar una ventaja injusta a la instancia ARM, y los outputs se pueden encontrar en el Anexo \ref{anexo:sysbench_output}, dando lugar
+a los siguientes resultados:
+
+\begin{center}
+\begin{tabular}{ | c | c | c | c | }
+    \hline
+    Arquitectura           &   Events/sec  &   Time elapsed &   Total Events    \\
+    \hline
+    ARM64                  &   2960.7109   &   10.0003s     &   29608           \\
+    \hline
+    x86                    &   758.0042    &   10.0013s     &   7581            \\
+    \hline
+    \hline
+    ARM vs x86             &   +290.595\%  &   -     &   -    \\
+    \hline
+\end{tabular}
+\end{center}
+
+Los cuales son espectaculares para ARM, teniendo una mejoría de un 290.595\% con respecto a Intel.
+
+Recordemos que estos resultados no se centran en comparar potencia hipotética de una arquitectura, sino comparar dos servicios con un precio similar y observar sus ventajas e inconvenientes.
+
+
+\subsubsection{7zip}
+Para instalar 7zip en Amazon Linux, se han instalado previamente los paquetes:
+\begin{minted}[breaklines]{bash}
+    sudo amazon-linux-extras install epel
+    sudo yum install -y p7zip p7zip-plugins
+\end{minted}
+
+De nuevo el benchmark se ha ejecutado en modo mononúcleo, con el siguiente comando:
+\begin{minted}[breaklines]{bash}
+    7z b -mmt1
+\end{minted}
+cuyos resultados se pueden encontrar en el Anexo \ref{anexo:7zip_output}, y arrojan los siguientes resultados medios:
+
+\begin{center}
+\begin{tabular}{ | c | c | c | }
+    \hline
+    Arquitectura           &   MIPS Compressing  &  MIPS Decompressing  \\
+    \hline
+    ARM64                  &   3922              &   3539               \\
+    \hline
+    x86                    &   3161              &   2754               \\
+    \hline
+    \hline
+    ARM vs x86             &   +24.07\%          &   +25.50\%           \\
+    \hline
+\end{tabular}
+\end{center}
+
+Los cuales de nuevo me han sorprendido. Personalmente pensaba que iba a ganar el procesador x86, pero parece que en estos tiers no se usan CPUs con la suficiente potencia como para
+desbancar al procesador Graviton de Amazon, que está portándose increiblemente bien, con una mejoría con respecto al x86 en mononúcleo de un 25\% aproximadamente.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                     CONCLUSIONES                                                      %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
 \section{Conclusiones}
-gravitación
+ARM está entrando con mucha fuerza en el mercado, y estos benchmarks muy reducidos y orientados más bien a los tiers más bajos de AWS parecen confirmarlos: Con ARM podemos obtener más del
+doble de rendimiento en AWS por una fracción del precio de x86.
+
+Esto es debido primero al ahorro energético que supone el uso de ARM tanto directa como indirectamente, y segundo debido a que Amazon diseña estos procesadores ``en casa'', por lo que no
+necesita sacarles tanto beneficio como por ejemplo Intel con respecto a sus procesadores Xeon.
+
+Sin embargo este cambio no viene sin inconvenientes: Hay programas que no se han portado aún completa o parcialmente para ARM, o que debido al no tan largo recorrido de esta última
+arquitectura, no han sido tan optimizados como para la arquitectura x86.
+Y es que programar en una arquiectura diferente a la que ejecutará la máquina final es algo que no gusta hacer, pero con la llegada de ordenadores personales como los de Apple, y se espera
+que de otras marcas, probablemente veremos una explosión de ARM en el mercado de consumo, y por tanto una explosión ciertamente correlacionada en la cantidad de servidores que correrán
+sus servicios sobre la microarquitectura de la compañía británica.
+
+\bigskip
+
+La conclusión que yo saco es clara: AWS sobre ARM es más barato que sobre x86, y para algunos ámbitos sin ninguna duda recomendaría su uso, pero quizás para ámbitos donde se necesite más
+verificación y seguridad, precisamente por el problema que comentamos de programar en una arquitectura diferente, tambien me siento capaz de afirmar que x86 no va a desaparecer, ni mucho
+menos, al menos en el futuro próximo.
+
+\section{Mención Especial: RISC-V}
+Con esta parece que inminente transición a paradigmas más basados en RISC, cada vez hay más compañías interesadas en diseñar sus SoCs ``en casa'', y un proyecto que comenzó como universitario
+llamado RISC-V está atrayendo bastante atención, sobre todo de las marcas que han de diseñar sus propios chips muy específicos como Western-Digital, Seagate, etc.
+
+De momento a la arquitectura aún le falta mucho ecosistema, pero está entrando con fuerza al conjunto de microarquitecturas que se considerarían viables para uso comercial, existiendo ya
+empresas como SiFive. (\url{https://www.sifive.com})
+
+\bigskip
+
+El principal atractivo de RISC-V es que a diferencia de ARM, es una ISA completamente libre de royalties y abierta, lo conocido como ``Open Hardware'', y que probablemente de aquí a unos
+años de mucho más de lo que hablar que hoy en día.
 
 
 \clearpage
 \begin{flushleft}
 \printbibliography[]{}
 \end{flushleft}
+
+
+\clearpage
+\begin{appendices}
+\addappheadtotoc
+\appendixpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                        ANEXO 1                                                        %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Sysbench Output}\label{anexo:sysbench_output}
+\subsection{Resultados para ARM}
+\begin{minted}[breaklines]{text}
+[ec2-user@ip-172-31-64-28 sysbench]$ sysbench cpu --threads=1 run
+sysbench 1.1.0-bbee5d5 (using bundled LuaJIT 2.1.0-beta3)
+
+Running the test with following options:
+Number of threads: 1
+Initializing random number generator from current time
+
+
+Prime numbers limit: 10000
+
+Initializing worker threads...
+
+Threads started!
+
+CPU speed:
+    events per second:  2960.71
+
+Throughput:
+    events/s (eps):                      2960.7109
+    time elapsed:                        10.0003s
+    total number of events:              29608
+
+Latency (ms):
+         min:                                    0.34
+         avg:                                    0.34
+         max:                                    0.39
+         95th percentile:                        0.34
+         sum:                                 9995.37
+
+Threads fairness:
+    events (avg/stddev):           29608.0000/0.00
+    execution time (avg/stddev):   9.9954/0.00
+\end{minted}
+\newpage
+\subsection{Resultados para Intel}
+\begin{minted}[breaklines]{text}
+[ec2-user@ip-172-31-60-52 ~]$ sysbench cpu --threads=1 run
+sysbench 1.1.0-bbee5d5 (using bundled LuaJIT 2.1.0-beta3)
+
+Running the test with following options:
+Number of threads: 1
+Initializing random number generator from current time
+
+
+Prime numbers limit: 10000
+
+Initializing worker threads...
+
+Threads started!
+
+CPU speed:
+    events per second:   758.00
+
+Throughput:
+    events/s (eps):                      758.0042
+    time elapsed:                        10.0013s
+    total number of events:              7581
+
+Latency (ms):
+         min:                                    1.16
+         avg:                                    1.32
+         max:                                    5.64
+         95th percentile:                        1.37
+         sum:                                 9986.84
+
+Threads fairness:
+    events (avg/stddev):           7581.0000/0.00
+    execution time (avg/stddev):   9.9868/0.00
+\end{minted}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                        ANEXO 2                                                        %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{7zip Output}\label{anexo:7zip_output}
+\subsection{Resultados para ARM}
+\begin{minted}[breaklines]{text}
+[ec2-user@ip-172-31-73-177 ~]$ 7z b -mmt1
+
+7-Zip [64] 16.02 : Copyright (c) 1999-2016 Igor Pavlov : 2016-05-21
+p7zip Version 16.02 (locale=en_US.UTF-8,Utf16=on,HugeFiles=on,64 bits,2 CPUs LE)
+
+LE
+CPU Freq:  2498  2497  2498  2499  2497  2497  2498  2498  2498
+
+RAM size:     955 MB,  # CPU hardware threads:   2
+RAM usage:    435 MB,  # Benchmark threads:      1
+
+                       Compressing  |                  Decompressing
+Dict     Speed Usage    R/U Rating  |      Speed Usage    R/U Rating
+         KiB/s     %   MIPS   MIPS  |      KiB/s     %   MIPS   MIPS
+
+22:       4213   100   4099   4099  |      41253   100   3522   3522
+23:       3808   100   3881   3881  |      40854   100   3536   3536
+24:       3567   100   3836   3836  |      40262   100   3535   3535
+25:       3393   100   3874   3874  |      40027   100   3563   3563
+----------------------------------  | ------------------------------
+Avr:             100   3923   3922  |              100   3539   3539
+Tot:             100   3731   3731
+\end{minted}
+\newpage
+\subsection{Resultados para Intel}
+\begin{minted}[breaklines]{text}
+[ec2-user@ip-172-31-60-52 ~]$ 7z b -mmt1
+
+7-Zip [64] 16.02 : Copyright (c) 1999-2016 Igor Pavlov : 2016-05-21
+p7zip Version 16.02 (locale=en_US.UTF-8,Utf16=on,HugeFiles=on,64 bits,1 CPU Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz (306F2),ASM,AES-NI)
+
+Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz (306F2)
+CPU Freq:  2621  2596  2716  2649  2637  2662  2640  2645  2634
+
+RAM size:     983 MB,  # CPU hardware threads:   1
+RAM usage:    435 MB,  # Benchmark threads:      1
+
+                       Compressing  |                  Decompressing
+Dict     Speed Usage    R/U Rating  |      Speed Usage    R/U Rating
+         KiB/s     %   MIPS   MIPS  |      KiB/s     %   MIPS   MIPS
+
+22:       3287   100   3198   3198  |      32298   100   2758   2758
+23:       3097   100   3157   3156  |      31826   100   2756   2755
+24:       2918   100   3139   3138  |      31603   100   2775   2774
+25:       2762   100   3160   3154  |      30675   100   2731   2730
+----------------------------------  | ------------------------------
+Avr:             100   3164   3161  |              100   2755   2754
+Tot:             100   2959   2958
+\end{minted}
+
+\end{appendices}
+
 \end{document}
