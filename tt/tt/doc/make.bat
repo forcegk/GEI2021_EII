@@ -20,12 +20,14 @@ goto :EOF
 :refs
 pdflatex %FLAGS% main
 biber main
+makeindex main.glo -s main.ist -t main.glg -o main.gls
 pdflatex %FLAGS% main
 goto :EOF
 
 :release
 pdflatex %FLAGS% main
 biber main
+makeindex main.glo -s main.ist -t main.glg -o main.gls
 pdflatex %FLAGS% main
 pdflatex %FLAGS% main
 goto :EOF
@@ -41,6 +43,10 @@ for %%a in ("*.xml") do del "%%a"
 for %%a in ("*.toc") do del "%%a"
 for %%a in ("*.pyg") do del "%%a"
 for %%a in ("*.out") do del "%%a"
+for %%a in ("*.glo") do del "%%a"
+for %%a in ("*.ist") do del "%%a"
+for %%a in ("*.glg") do del "%%a"
+for %%a in ("*.gls") do del "%%a"
 for %%a in ("preamble\*.aux") do del "%%a"
 for %%a in ("img\*.pdf") do del "%%a"
 for %%a in ("_minted-main\*") do del "%%a"

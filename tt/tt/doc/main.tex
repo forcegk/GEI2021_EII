@@ -16,6 +16,9 @@
 
 \renewcommand{\labelenumii}{\theenumii}
 \renewcommand{\theenumii}{\theenumi.\arabic{enumii}.}
+
+\include{glossaries}
+
 \begin{document}
 \pagenumbering{gobble}% Remove page numbers (and reset to 1)
 \clearpage
@@ -34,7 +37,7 @@
 \vspace*{1in}
 \title {}
 ENXEÑARÍA DE INFRAESTRUTURAS INFORMÁTICAS 20/21 Q1\\
-Borrador Pendiente de Revisión\\
+Borrador Primera Revisión\\
 %\vspace{3cm}
 \vspace*{0.5in}
 \begin{Large}
@@ -62,8 +65,8 @@ Alonso Rodríguez Iglesias\\
 %
 
 \tableofcontents
-\newpage
 
+\newpage
 % Justificamos el texto
 \pagenumbering{arabic}
 \justifying{}
@@ -73,7 +76,7 @@ Alonso Rodríguez Iglesias\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introducción}\label{section:introduccion}
 \subsection{Contexto Histórico}
-Con el creciente interés en las arquitecturas RISC debido a su bajo consumo, y de ARM en particular, provocado por el auge de los dispositivos móviles,
+Con el creciente interés en las arquitecturas \gls{RISC} debido a su bajo consumo, y de \gls{ARM} en particular, provocado por el auge de los dispositivos móviles,
 los Datacenter, que por su lado han ganado fuerza debido al también creciente interés en los servicios cloud, buscan una muy alta eficiencia
 energética.
 
@@ -82,12 +85,12 @@ haya experimentado un crecimiento sin igual, y que no solo el mundo de los servi
 hacia esta plataforma. \parencite{apple_m1_overview}
 
 \subsection{Motivación}\label{subsection:motivacion}
-No nos vamos a engañar, a mí personalmente lo que más me atrae de la informática es la arquitectura, así que no es sorpresa que haya terminado eligiendo este tema, del que durante muchos
-años tanto se ha discutido. \parencite{risc_vs_cisc_6522302}
+No nos vamos a engañar, personalmente la rama de la informática que más interese me despierta es la arquitectura de computadores, así que no es sorpresa que haya terminado eligiendo
+este tema, del que durante muchos años tanto se ha discutido. \parencite{risc_vs_cisc_6522302}
 
 \subsection{Objetivos}\label{subsection:objetivos}
 En este trabajo tutelado se tratará brevemente el contexto histórico de las arquitecturas que se vienen usando en los CPD's, el por qué de la entrada con fuerza de ARM en el
-mismo ámbito, por razones de consumo/eficiencia (como por ejemplo coste de enfriamiento, etc), y se realizarán pruebas sintéticas sobre instancias ARM Graviton de AWS.\parencite{arm_aws_graviton_overview}
+mismo ámbito, por razones de consumo/eficiencia (como por ejemplo coste de enfriamiento, etc), y se realizarán pruebas sintéticas sobre instancias ARM Graviton de \gls{AWS}. \parencite{arm_aws_graviton_overview}
 
 Finalmente se reflexionará (brevemente) acerca de la posible evolución del mundo de los CPD, cloud, streaming, etc.
 
@@ -97,7 +100,7 @@ Finalmente se reflexionará (brevemente) acerca de la posible evolución del mun
 \newpage
 \section{Uso de ARM en el CPD}\label{section:uso_arm_cpd}
 \subsection{Breve introducción a RISC vs CISC}\label{subsection:introduccion_risc_cisc}
-La principal diferencia entre RISC y CISC es la complejidad del repertorio de instrucciones:
+La principal diferencia entre RISC y \gls{CISC} es la complejidad del repertorio de instrucciones:
 \begin{itemize}
     \item RISC, o Reduced Intruction Set Computer, es una aproximación más sencilla al diseño de los repertorios de instrucciones, especificando un conjunto de instrucciones reducido con el que
     realizar los cálculos. Por esta razón los programas para CPU RISC ocupan más tamaño que sus contrapartes para CISC. Sin embargo, dicha simplicidad se traduce en una menor cantidad de
@@ -141,12 +144,13 @@ constituyendo alrededor del 1,8\% del total de consumo de potencia de todos los 
 Imaginemos por un momento que existe un fabricante que vende modelos más baratos de procesadores, que consumen y disipan menos potencia, y eso se traduce en una bajada de un 10\% en el consumo.
 Este pequeño incremento en eficiencia energética se traduce en 7TWh de ahorro energético, por el que muchos datacenters están dispuesto a pagar.
 
-\subsection{Propuesta de valor de ARM}
+\subsection{Propuesta de valor de ARM}\label{subsection:propuesta_valor_arm}
 ARM ofrece un ahorro energético similar al comentado en la sección anterior, pero además también ofrece la posibilidad de licenciar la arquitectura, permitiendo así a grandes compañías
-como Amazon, Microsoft y Google crear sus propias CPUs conforme a la ISA de ARM, pudiendo cubrir más eficazmente las demandas del dominio de la empresa licenciataria, y ofreciendo aún más
+como Amazon, Microsoft y Google crear sus propias CPUs conforme a la \gls{ISA} de ARM, pudiendo cubrir más eficazmente las demandas del dominio de la empresa licenciataria, y ofreciendo aún más
 eficiencia energética.
 
-Es en este segundo caso cuando la competencia empieza a ser más evidente entre x86 y ARM (Figura \ref{fig:graviton_vs_amd_vs_intel_spec_total}), siendo la diferencia en SPECint2017 mononúcleo positiva para los Amazon Graviton 2 con respecto
+Es en este segundo caso cuando la competencia empieza a ser más evidente entre \gls{x86} y ARM (Figura \ref{fig:graviton_vs_amd_vs_intel_spec_total}), siendo la diferencia en SPECint2017 mononúcleo
+positiva para los Amazon Graviton 2 (\ref{subsection:aws_graviton_introduccion}) con respecto
 a los AMD EPYC 7571, y rozando a los Intel Xeon Platinum 8259, solo cayendo por poco en SPECfp2017, creando un escenario previsiones muy positivas para la implantación de ARM
 en servidores. \parencite{graviton2_vs_amd_vs_intel_cloud_compute}
 
@@ -162,6 +166,26 @@ en servidores. \parencite{graviton2_vs_amd_vs_intel_cloud_compute}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \section{AWS Graviton}
+\subsection{Introducción}\label{subsection:aws_graviton_introduccion}
+Si bien en el el apartado \ref{subsection:propuesta_valor_arm} ya mencionamos las CPU Graviton de Amazon Web Services (AWS Graviton), no se han introducido propiamente aún.
+
+\bigskip
+
+Las CPUs Graviton de Amazon fueron la primera aproximación de la matriz de AWS al diseño propio de CPUs. Basadas en los núcleos \gls{Neoverse}, \gls{IP_intelectual} de ARM, y
+diseñados por la compañía israelí subsidiaria de Amazon desde 2015: Annapurna Labs.
+
+Como podemos revisitar en la figura \ref{fig:graviton_vs_amd_vs_intel_spec_total} la primera generación no fue particularmente competente en terminos de rendimiento bruto con respecto a
+las opciones de Intel y AMD. Sin embargo con la llegada de la segunda generación de procesadores Graviton, fabricados en nodo de 7nm con respecto a los 16nm de la primera generación
+(Figura \ref{fig:aws-graviton2-slide}), el rendimiento ya sí es excelente, permitiendo una rentabilidad nunca antes vista, así como una menor dependencia de Amazon de proveedores
+externos. \autocite[]{graviton1_graviton2_zdnet_aws}
+
+\begin{figure}[h]
+\includegraphics[width=\textwidth]{img/aws-graviton2-slide.png}
+\caption{Diapositiva de la Presentación Oficial de AWS Graviton2}
+\label{fig:aws-graviton2-slide}
+\end{figure}
+
+
 \subsection{Precios}
 Recordemos que los precios de AWS fluctúan bajo demanda, pero más o menos siempre se mantienen dentro de unos márgenes.
 A día 13 de Enero del 2021, los precios para las instancias de baja potencia son los siguientes:
@@ -322,8 +346,8 @@ necesita sacarles tanto beneficio como por ejemplo Intel con respecto a sus proc
 
 Sin embargo este cambio no viene sin inconvenientes: Hay programas que no se han portado aún completa o parcialmente para ARM, o que debido al no tan largo recorrido de esta última
 arquitectura, no han sido tan optimizados como para la arquitectura x86.
-Y es que programar en una arquiectura diferente a la que ejecutará la máquina final es algo que no gusta hacer, pero con la llegada de ordenadores personales como los de Apple, y se espera
-que de otras marcas, probablemente veremos una explosión de ARM en el mercado de consumo, y por tanto una explosión ciertamente correlacionada en la cantidad de servidores que correrán
+Y es que programar en una arquitectura diferente a la que ejecutará la máquina final es algo que no gusta hacer, pero que con la llegada de ordenadores personales como los nuevos Mac de Apple
+(y se espera que de otras marcas), probablemente veremos una explosión de ARM en el mercado de consumo, y por tanto una explosión ciertamente correlacionada en la cantidad de servidores que correrán
 sus servicios sobre la microarquitectura de la compañía británica.
 
 \bigskip
@@ -331,6 +355,18 @@ sus servicios sobre la microarquitectura de la compañía británica.
 La conclusión que yo saco es clara: AWS sobre ARM es más barato que sobre x86, y para algunos ámbitos sin ninguna duda recomendaría su uso, pero quizás para ámbitos donde se necesite más
 verificación y seguridad, precisamente por el problema que comentamos de programar en una arquitectura diferente, tambien me siento capaz de afirmar que x86 no va a desaparecer, ni mucho
 menos, al menos en el futuro próximo.
+
+Estos benchmarks han de ser tomados con cautela, ya que estamos comparando instancias que no se basan necesariamente en las mismas tecnologías, estando la instancia \texttt{t4g.micro}
+basada en el sistema Nitro de AWS, a diferencia de la instancia \texttt{t2.micro}, que es una instancia de rendimiento por ráfagas.
+
+De todos modos estas diferencias no invalidan la conclusión de que, sin ninguna duda, a pesar de que únicamente se ha podido medir de primera mano a pequeñas escala, utilizar instancias de S3
+sobre ARM es más económico para Amazon, y por tanto para el cliente final.
+
+\subsection{ARM en Otros Ámbitos}
+ARM no solo ha entrado con fuerza en los servicios web de Amazon, si no que el superordenador más potente del mundo según top500 desde el 6 de Junio del 2020 hasta fecha de escritura de este
+documento, es el \emph{SUPERCOMPUTER FUGAKU}, fabricado por Fujitsu.
+Dicho supercomputador está compuesto por 158.976 CPUs \texttt{A64FX}, con 48 Cores a una frecuencia de 2,2GHz, haciendo uso de innovadoras tecnologías como pueden ser memorias \gls{HBM} integradas en CPU,
+una inteligente distribución física de los núcleos, e intercomunicación mediante la tecnología propietaria de Fujitsu: \emph{Tofu Interconnect D}. (\url{https://www.top500.org/system/179807/})
 
 \subsection{Mención Especial: RISC-V}
 Con esta parece que inminente transición a paradigmas más basados en RISC, cada vez hay más compañías interesadas en diseñar sus SoCs ``en casa'', y un proyecto que comenzó como universitario
@@ -348,6 +384,8 @@ años de mucho más de lo que hablar que hoy en día.
 \clearpage
 \begin{flushleft}
 \printbibliography[]{}
+\clearpage
+\printglossaries
 \end{flushleft}
 
 
@@ -500,6 +538,10 @@ Threads fairness:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \section{7zip Output}\label{anexo:7zip_output}
+\subsection{Información de Tiempos}
+Como 7zip no arroja información de tiempos de \emph{benchmark}, y debido a la distinta naturaleza de las instancias para ARM y x86, es pertinente especificar que el
+tiempo de ejecución de cada uno de estos tests es de \textbf{25 segundos}.
+
 \subsection{Resultados para ARM}
 \begin{minted}[breaklines]{text}
 [ec2-user@ip-172-31-73-177 ~]$ 7z b -mmt1

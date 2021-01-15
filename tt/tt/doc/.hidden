@@ -6,4 +6,9 @@ main.log
 main.run.xml
 main.toc
 main.out
+main.glo
+main.ist
+main.glg
+main.gls
+glossaries.aux
 _minted-main

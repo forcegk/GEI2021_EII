@@ -8,4 +8,8 @@
 *.toc
 *.out
 *.pyg
+*.glo
+*.ist
+*.glg
+*.gls
 _minted-main/
