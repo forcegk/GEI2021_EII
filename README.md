@@ -13,4 +13,4 @@
 
 ## Trabajos Tutelados
 - [x] Anteproyecto
-- [ ] Trabajo Tutelado
+- [x] Trabajo Tutelado
